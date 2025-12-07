@@ -41,7 +41,12 @@ export async function translateAllComment() {
     translateAllForType('comment');
 }
 
-export async function translateAllForType(type = 'comment') {
+export async function translateAllCjkComment() {
+    translateAllForType('comment', 
+        comment => /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(comment));
+}
+
+export async function translateAllForType(type = 'comment', filterFn:(comment: string) => boolean = () => true) {
     let editor = window.activeTextEditor;
 
     window.withProgress({
@@ -58,7 +63,7 @@ export async function translateAllForType(type = 'comment') {
             progress.report({ message: 'Parsing' });
             let comment = await createComment();
             let blocks = await comment.getAllComment(editor.document, type, editor.selections[0]);
-
+            blocks = blocks!?.filter(block => filterFn(block.comment));
 
             if (!blocks || blocks.length === 0) return;
 

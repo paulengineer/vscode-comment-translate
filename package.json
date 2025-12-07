@@ -97,6 +97,11 @@
                 "category": "Comment Translate"
             },
             {
+                "command": "commentTranslate.translateAllCjkComment",
+                "title": "%commentTranslate.command.translateAllCjkComment%",
+                "category": "Comment Translate"
+            },
+            {
                 "command": "commentTranslate.clipboard",
                 "title": "%commentTranslate.command.clipboard%",
                 "category": "Comment Translate"
@@ -234,6 +239,10 @@
                     "group": "2_file@1"
                 },{
                     "command": "commentTranslate.translateAllComment",
+                    "when":"resourceLangId in commentTranslate.canLanguages",
+                    "group": "2_file@2"
+                },{
+                    "command": "commentTranslate.translateAllCjkComment",
                     "when":"resourceLangId in commentTranslate.canLanguages",
                     "group": "2_file@2"
                 },{
