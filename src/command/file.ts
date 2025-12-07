@@ -1,4 +1,4 @@
-import { commands, env, ProgressLocation, Selection, window } from "vscode";
+import { commands, env, ProgressLocation, Selection, window, Uri, workspace, FileType } from "vscode";
 import { getConfig, selectTargetLanguage } from "../configuration";
 import { ctx, outputChannel } from "../extension";
 // import { client } from "../extension";
@@ -41,15 +41,54 @@ export async function translateAllComment() {
     translateAllForType('comment');
 }
 
-export async function translateAllCjkComment() {
-    translateAllForType('comment', 
+
+export async function translateAllCjkComment(uri?: Uri, uris?: Uri[]) {
+    // If multiple files selected, uris contains all selected files
+    const selectedUris = uris && uris.length > 0 ? uris : (uri ? [uri] : []);
+
+    if (selectedUris.length === 0) {
+        // Called from command palette or editor - use active editor
+        return internalTranslateAllCjkComment();
+    }
+
+    // First loop: collect all files recursively
+    const filesToProcess: Uri[] = [];
+
+    async function collectFiles(uri: Uri) {
+        const stat = await workspace.fs.stat(uri);
+
+        if (stat.type === FileType.File) {
+            filesToProcess.push(uri);
+        } else if (stat.type === FileType.Directory) {
+            const entries = await workspace.fs.readDirectory(uri);
+            for (const [name] of entries) {
+                const childUri = Uri.joinPath(uri, name);
+                await collectFiles(childUri);
+            }
+        }
+    }
+
+    for (const uri of selectedUris) {
+        await collectFiles(uri);
+    }
+
+    // Second loop: process all collected files
+    for (const fileUri of filesToProcess) {
+        const document = await workspace.openTextDocument(fileUri);
+        await window.showTextDocument(document);
+        await internalTranslateAllCjkComment();
+    }
+}
+
+async function internalTranslateAllCjkComment() {
+    await translateAllForType('comment',
         comment => /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(comment));
 }
 
-export async function translateAllForType(type = 'comment', filterFn:(comment: string) => boolean = () => true) {
+export async function translateAllForType(type = 'comment', filterFn: (comment: string) => boolean = () => true) {
     let editor = window.activeTextEditor;
 
-    window.withProgress({
+    await window.withProgress({
         location: ProgressLocation.Window,
         title: 'Comment Translate'
     },

@@ -219,6 +219,18 @@
                     "group": "1_translate@0"
                 }
             ],
+            "explorer/context": [
+                {
+                    "command": "commentTranslate.translateAllCjkComment",
+                    "when": "resourceLangId in commentTranslate.canLanguages",
+                    "group": "2_workspace@1"
+                },
+                {
+                    "command": "commentTranslate.translateAllCjkComment",
+                    "when": "explorerResourceIsFolder",
+                    "group": "2_workspace@1"
+                }
+            ],
             "commentTranslate": [
                 {
                     "command": "commentTranslate.replaceSelections",

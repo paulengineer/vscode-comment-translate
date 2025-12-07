@@ -7,7 +7,7 @@
     "commentTranslate.command.selectAllComment": "Select all Comment in file",
     "commentTranslate.command.translateAllText": "Translate all String in file",
     "commentTranslate.command.translateAllComment": "Translate all Comment in file",
-    "commentTranslate.command.translateAllCjkComment": "Translate all Chinese, Japanese, Korean Comments in file",
+    "commentTranslate.command.translateAllCjkComment": "Translate all Chinese, Japanese, Korean Comments",
     "commentTranslate.command.changeTargetLanguage": "Change translate target language",
     "commentTranslate.command.changeTranslateSource": "Change translate source",
     "commentTranslate.command.replaceSelections": "Translate and replace selections",
