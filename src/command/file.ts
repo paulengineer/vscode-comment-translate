@@ -103,25 +103,24 @@ export async function translateAllForType(type = 'comment', filterFn:(comment: s
                 }
             });
             editor.setDecorations(decoration, selections);
-            let beginTime = Date.now();
             try {
                 let results = await Promise.all(translates);
                 //最少提示1秒钟
-                setTimeout(() => {
-                    decoration.dispose();
-                }, 1000 - (Date.now() - beginTime));
                 editor.edit(builder => {
                     results.forEach(({ translatedText }, index) => {
                         let selection = selections[index];
                         translatedText && builder.replace(selection, translatedText);
                     });
+                })
+                .then(() => {
+                    decoration.dispose();
                 });
             } catch (e: any) {
                 decoration.dispose();
                 outputChannel.append(e.toString());
             }
 
-        })
+        });
 }
 
 
